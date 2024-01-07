@@ -1,0 +1,360 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>多电机控制</title><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 40px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 2; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px !important; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  html.blink-to-pdf { font-size: 13px; }
+  .typora-export #write { padding-left: 32px; padding-right: 32px; padding-bottom: 0px; break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.md-inline-math .MathJax_SVG .noError { display: none !important; }
+.html-for-mac .inline-math-svg .MathJax_SVG { vertical-align: 0.2px; }
+.md-math-block .MathJax_SVG_Display { text-align: center; margin: 0px; position: relative; text-indent: 0px; max-width: none; max-height: none; min-height: 0px; min-width: 100%; width: auto; overflow-y: hidden; display: block !important; }
+.MathJax_SVG_Display, .md-inline-math .MathJax_SVG_Display { width: auto; margin: inherit; display: inline-block !important; }
+.MathJax_SVG .MJX-monospace { font-family: var(--monospace); }
+.MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
+.MathJax_SVG { display: inline; font-style: normal; font-weight: 400; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
+.MathJax_SVG * { transition: none 0s ease 0s; }
+.MathJax_SVG_Display svg { vertical-align: middle !important; margin-bottom: 0px !important; margin-top: 0px !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="mermaid"] svg, [lang="flow"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+
+
+.CodeMirror { height: auto; }
+.CodeMirror.cm-s-inner { background: inherit; }
+.CodeMirror-scroll { overflow: auto hidden; z-index: 3; }
+.CodeMirror-gutter-filler, .CodeMirror-scrollbar-filler { background-color: rgb(255, 255, 255); }
+.CodeMirror-gutters { border-right: 1px solid rgb(221, 221, 221); background: inherit; white-space: nowrap; }
+.CodeMirror-linenumber { padding: 0px 3px 0px 5px; text-align: right; color: rgb(153, 153, 153); }
+.cm-s-inner .cm-keyword { color: rgb(119, 0, 136); }
+.cm-s-inner .cm-atom, .cm-s-inner.cm-atom { color: rgb(34, 17, 153); }
+.cm-s-inner .cm-number { color: rgb(17, 102, 68); }
+.cm-s-inner .cm-def { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-variable { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-variable-2 { color: rgb(0, 85, 170); }
+.cm-s-inner .cm-variable-3 { color: rgb(0, 136, 85); }
+.cm-s-inner .cm-string { color: rgb(170, 17, 17); }
+.cm-s-inner .cm-property { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-operator { color: rgb(152, 26, 26); }
+.cm-s-inner .cm-comment, .cm-s-inner.cm-comment { color: rgb(170, 85, 0); }
+.cm-s-inner .cm-string-2 { color: rgb(255, 85, 0); }
+.cm-s-inner .cm-meta { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-qualifier { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-builtin { color: rgb(51, 0, 170); }
+.cm-s-inner .cm-bracket { color: rgb(153, 153, 119); }
+.cm-s-inner .cm-tag { color: rgb(17, 119, 0); }
+.cm-s-inner .cm-attribute { color: rgb(0, 0, 204); }
+.cm-s-inner .cm-header, .cm-s-inner.cm-header { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-quote, .cm-s-inner.cm-quote { color: rgb(0, 153, 0); }
+.cm-s-inner .cm-hr, .cm-s-inner.cm-hr { color: rgb(153, 153, 153); }
+.cm-s-inner .cm-link, .cm-s-inner.cm-link { color: rgb(0, 0, 204); }
+.cm-negative { color: rgb(221, 68, 68); }
+.cm-positive { color: rgb(34, 153, 34); }
+.cm-header, .cm-strong { font-weight: 700; }
+.cm-del { text-decoration: line-through; }
+.cm-em { font-style: italic; }
+.cm-link { text-decoration: underline; }
+.cm-error { color: red; }
+.cm-invalidchar { color: red; }
+.cm-constant { color: rgb(38, 139, 210); }
+.cm-defined { color: rgb(181, 137, 0); }
+div.CodeMirror span.CodeMirror-matchingbracket { color: rgb(0, 255, 0); }
+div.CodeMirror span.CodeMirror-nonmatchingbracket { color: rgb(255, 34, 34); }
+.cm-s-inner .CodeMirror-activeline-background { background: inherit; }
+.CodeMirror { position: relative; overflow: hidden; }
+.CodeMirror-scroll { height: 100%; outline: 0px; position: relative; box-sizing: content-box; background: inherit; }
+.CodeMirror-sizer { position: relative; }
+.CodeMirror-gutter-filler, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-vscrollbar { position: absolute; z-index: 6; display: none; }
+.CodeMirror-vscrollbar { right: 0px; top: 0px; overflow: hidden; }
+.CodeMirror-hscrollbar { bottom: 0px; left: 0px; overflow: hidden; }
+.CodeMirror-scrollbar-filler { right: 0px; bottom: 0px; }
+.CodeMirror-gutter-filler { left: 0px; bottom: 0px; }
+.CodeMirror-gutters { position: absolute; left: 0px; top: 0px; padding-bottom: 30px; z-index: 3; }
+.CodeMirror-gutter { white-space: normal; height: 100%; box-sizing: content-box; padding-bottom: 30px; margin-bottom: -32px; display: inline-block; }
+.CodeMirror-gutter-wrapper { position: absolute; z-index: 4; background: 0px 0px !important; border: none !important; }
+.CodeMirror-gutter-background { position: absolute; top: 0px; bottom: 0px; z-index: 4; }
+.CodeMirror-gutter-elt { position: absolute; cursor: default; z-index: 4; }
+.CodeMirror-lines { cursor: text; }
+.CodeMirror pre { border-radius: 0px; border-width: 0px; background: 0px 0px; font-family: inherit; font-size: inherit; margin: 0px; white-space: pre; overflow-wrap: normal; color: inherit; z-index: 2; position: relative; overflow: visible; }
+.CodeMirror-wrap pre { overflow-wrap: break-word; white-space: pre-wrap; word-break: normal; }
+.CodeMirror-code pre { border-right: 30px solid transparent; width: fit-content; }
+.CodeMirror-wrap .CodeMirror-code pre { border-right: none; width: auto; }
+.CodeMirror-linebackground { position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px; z-index: 0; }
+.CodeMirror-linewidget { position: relative; z-index: 2; overflow: auto; }
+.CodeMirror-wrap .CodeMirror-scroll { overflow-x: hidden; }
+.CodeMirror-measure { position: absolute; width: 100%; height: 0px; overflow: hidden; visibility: hidden; }
+.CodeMirror-measure pre { position: static; }
+.CodeMirror div.CodeMirror-cursor { position: absolute; visibility: hidden; border-right: none; width: 0px; }
+.CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+.CodeMirror-focused div.CodeMirror-cursor { visibility: inherit; }
+.cm-searching { background: rgba(255, 255, 0, 0.4); }
+@media print {
+  .CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+}
+
+
+:root { --text-color: #40464f; --primary-color: #4870ac; --bg-color: #ffffff; --side-bar-bg-color: var(--bg-color); --marker-color: #a2b6d4; --highlight-color: #ffffb5c2; --header-span-color: var(--primary-color); --block-bg-color: #f6f8fa; --img-shadow-color: #e3e8f0; --search-hit-bg-color: var(--select-text-bg-color); --search-select-bg-color: #5bb3ff; --control-text-hover-color: #a2b6d4; --rawblock-edit-panel-bd: var(--block-bg-color); --item-hover-bg-color: rgb(246 248 250); --active-file-bg-color: var(--block-bg-color); }
+@media print {
+  :root { --text-color: rgb(0, 0, 0); }
+  ::-webkit-scrollbar-thumb { background-color: transparent !important; }
+}
+#write { max-width: 950px; font-size: 1.1rem; color: var(--text-color); line-height: 1.6; word-spacing: 0px; letter-spacing: 0px; word-break: break-word; overflow-wrap: break-word; text-align: justify; font-family: Cantarell, SourceHanSerifCN, JetBrainsMono; margin-bottom: 20rem; }
+.searchpanel-search-option-btn { position: absolute; width: 24px; height: 16px; right: 5px; top: 5px; z-index: 99; cursor: pointer; margin-top: 1px; padding: 1px; border-radius: 3px; line-height: 10px; border-width: 1px; border-style: solid; border-image: initial; border-color: var(--active-toggle-btn-color); }
+#write strong { color: var(--primary-color); }
+#write a { color: var(--primary-color); }
+#write .md-p a, #write .md-heading a { overflow-wrap: break-word; text-decoration: underline solid; margin: 2px; }
+#write h2.md-heading a { text-decoration: underline; border-bottom: 0px; }
+[md-inline="url"], [md-inline="link"] > .md-content, [md-inline="image"] > .md-meta { word-break: break-all; font-weight: normal; font-family: JetBrainsMono; padding-left: 0.15rem; padding-right: 0rem; color: var(--marker-color); }
+.md-toc-content { font-family: SourceHanSerifCN; }
+.md-toc-content:empty::before { color: var(--primary-color); }
+#write div.md-toc-tooltip { font-family: SourceHanSerifCN; color: var(--primary-color); position: static; margin-top: 10px; background-color: var(--block-bg-color); line-height: 1.6rem; padding: 0.3rem 0.75rem; border-top: none; border-radius: 0.5rem; }
+.md-toc:focus .md-toc-content { border-color: var(--bg-color); margin: 9px -1px; }
+.md-toc .md-toc-content { border-color: var(--bg-color); margin: 10px 0px; }
+mark { background: var(--highlight-color); padding: 1px 0.15rem; border-radius: 1px; color: inherit; }
+#write + p, #write blockquote p { font-size: 1.1rem; padding-top: 0.2rem; padding-bottom: 0.2rem; margin: 0px; line-height: 1.8rem; color: var(--text-color); }
+#write h4, #write h5, #write h6 { font-weight: normal; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6 { font-family: SourceHanSerifCN; padding: 0px; color: var(--primary-color); }
+#write h1 { text-align: center; }
+#write h2 { background-color: var(--header-span-color); color: var(--bg-color); padding: 1px 12.5px; border-radius: 4px; display: inline-block; }
+#write h2 a { color: var(--bg-color); border-bottom-color: var(--bg-color)  !important; }
+#write h2 strong { color: var(--bg-color); }
+#write h2 code { color: var(--bg-color); background-color: var(--header-span-color); }
+#write h1 { font-size: 2rem; }
+#write h2 { font-size: 1.5rem; }
+#write h3 { font-size: 1.4rem; }
+#write h4 { font-size: 1.2rem; }
+#write h5 { font-size: 1.1rem; }
+#write h6 { font-size: 1.1rem; }
+#write h1 { padding-top: 0.9rem; margin-bottom: 2.3rem; }
+#write h2 { margin: 0.3em 0px; }
+#write h3 { margin: 1em 0px; }
+#write h4 { margin: 0.8em 0px; }
+#write h5 { margin: 0.6em 0px; }
+#write h6 { margin: 0.4em 0px; }
+blockquote h3.md-focus::before, blockquote h4.md-focus::before, blockquote h5.md-focus::before, blockquote h6.md-focus::before { left: -1.3rem; }
+li.md-list-item { margin: 0.4rem 0px; }
+#write ul, #write ol { margin-top: 8px; margin-bottom: 8px; padding-left: 20px; }
+#write ul { list-style-type: disc; }
+#write em { padding: 0px 3px 0px 0px; }
+#write ul ul { list-style-type: square; }
+#write ol { list-style-type: decimal; }
+#write li section { margin-top: 5px; margin-bottom: 5px; line-height: 1.7rem; text-align: justify; color: var(--text-color); font-weight: 500; }
+#write blockquote { display: block; font-size: 0.9em; overflow: auto; border-left: 3px solid var(--primary-color); padding: 15px 30px 15px 20px; margin-bottom: 20px; margin-top: 20px; background: var(--block-bg-color); }
+#write code { color: var(--primary-color); font-size: 94%; font-weight: normal; overflow-wrap: break-word; padding: 2px 4px; border-radius: 3px; margin: 2px; background-color: var(--block-bg-color); font-family: JetBrainsMono; word-break: break-all; }
+#write img { margin: 0px auto; max-width: 100%; }
+#write p > .md-image:only-child:not(.md-img-error) img, #write p > img:only-child { filter: drop-shadow(var(--img-shadow-color) 0px 6px 6px); display: block; margin: 0px auto; padding: 1rem; }
+#write table { display: table; text-align: justify; overflow-x: auto; border-collapse: collapse; border-spacing: 0px; font-size: 1em; margin: 0px 0px 20px; width: 100%; }
+#write tbody { border: 0px; }
+#write table tr { border-width: 1px 0px 0px; border-right-style: initial; border-bottom-style: initial; border-left-style: initial; border-right-color: initial; border-bottom-color: initial; border-left-color: initial; border-image: initial; border-top-style: solid; border-top-color: rgb(204, 204, 204); }
+#write table tr th, #write table tr td { font-size: 1rem; border: 1px solid rgb(217, 223, 228); padding: 5px 10px; text-align: justify; }
+#write table tr th { font-family: SourceHanSerifCN; text-align: center; min-width: 10rem; font-weight: bold; color: var(--primary-color); }
+#write table tr td:hover, #write table tr th:hover { background-color: var(--block-bg-color); }
+table td { min-width: 32px; }
+.md-table-resize-popover { width: auto !important; }
+sup.md-footnote { background-color: var(--block-bg-color); color: var(--primary-color); }
+.md-def-name { color: var(--primary-color); }
+.md-inline-math script { color: var(--primary-color); }
+.md-rawblock-control:not(.md-rawblock-tooltip) { background: var(--bg-color); color: var(--md-char-color); }
+.code-tooltip { box-shadow: none; }
+.md-rawblock-tooltip.md-rawblock-control { border-radius: 1rem; }
+.md-rawblock .md-rawblock-tooltip { transform: translateY(-120%); }
+.md-comment { color: rgb(168, 168, 169); opacity: 1; font-family: JetBrainsMono; }
+hr { margin-top: 20px; margin-bottom: 20px; border-width: 2px 0px 0px; border-right-style: initial; border-bottom-style: initial; border-left-style: initial; border-right-color: initial; border-bottom-color: initial; border-left-color: initial; border-image: initial; border-top-style: solid; border-top-color: rgb(238, 242, 245); border-radius: 2px; }
+#write input[type="checkbox"] { width: 0px; }
+.task-list-item input::before { content: ""; display: inline-block; width: 1.0125rem; height: 1.0125rem; vertical-align: middle; text-align: center; border: 1px solid var(--marker-color); border-radius: 1.2rem; background-color: rgb(253, 253, 253); margin-left: -0.1rem; margin-right: 0.1rem; margin-top: -0.6rem; }
+.task-list-item input:checked::before { content: "✓"; font-weight: bold; -webkit-text-stroke: 1px var(--primary-color); color: var(--primary-color); background-color: var(--bg-color); font-size: 0.75rem; line-height: 0.8rem; }
+blockquote .task-list-item input::before { margin-top: 0.2rem; }
+#typora-sidebar { font-family: Cantarell, SourceHanSerifCN; height: 100%; color: var(--text-color); font-size: 0.92rem; background-color: var(--bg-color); }
+#sidebar-content.sidebar-content { margin-top: 0.5rem; }
+.html-for-mac #write input[type="checkbox"] { margin-top: 0.65rem; }
+.html-for-mac #write .task-list-item input::before { margin-top: -0.85rem; }
+.active-tab-files #info-panel-tab-file .info-panel-tab-border, .active-tab-outline #info-panel-tab-outline .info-panel-tab-border, .ty-show-search #info-panel-tab-search .info-panel-tab-border { border-radius: 10px; height: 1px; background-color: var(--primary-color); }
+.file-node-content { color: var(--primary-color); line-height: 1.6rem; }
+span.file-node-title-name-part { color: var(--text-color); }
+span.file-node-title-ext-part { color: var(--text-color); }
+.file-node-icon { padding-right: 0.2rem; }
+.file-tree-node.active > .file-node-background { border-left-width: ; border-left-style: ; border-color: var(--primary-color); }
+#outline-content { height: 100%; overflow-x: hidden; line-height: 1.6rem; font-size: 0.96rem; }
+#outline-content .outline-active, .pin-outline .outline-active { color: var(--primary-color); }
+.outline-item { padding-left: 2em; }
+.outline-item > .outline-expander::before { transform: translateY(-1px) !important; }
+pre.md-meta-block { font-family: JetBrainsMono; color: var(--primary-color); background: rgb(246, 248, 250); padding: 1.5rem; margin: -37px 0rem 3.8rem; filter: drop-shadow(var(--img-shadow-color) 0px 3px 3px); }
+pre.md-fences-advanced.md-focus .md-fences-adv-panel { border-radius: 0.8rem; }
+#outline-content::-webkit-scrollbar { width: 0.5rem; }
+#file-library::-webkit-scrollbar { width: 0.5rem; }
+::-webkit-scrollbar-track { border-radius: 10px; }
+::-webkit-scrollbar-thumb { border-radius: 10px; background: rgba(179, 179, 179, 0.424); }
+::-webkit-scrollbar { width: 1rem; }
+.md-fences::before { content: " "; display: block; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: rgb(40, 44, 52); margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px; }
+.CodeMirror-wrap .CodeMirror-scroll { overflow-x: auto; }
+.md-fences .cm-s-inner.CodeMirror { margin: 1.5rem 0px; }
+.cm-s-inner.CodeMirror { padding: 1.2rem 0.8rem; color: rgb(79, 84, 103); font-family: JetBrainsMono; border-radius: 10px; background-color: var(--block-bg-color); line-height: 1.6rem; }
+.CodeMirror-gutters { border-right: 1px solid rgba(162, 182, 212, 0.32); background: inherit; white-space: nowrap; }
+pre.CodeMirror-line { padding: 0px 1.2rem; }
+.CodeMirror-linenumber { padding: 0px 3px 0px 5px; text-align: right; color: var(--primary-color); }
+.cm-s-inner .cm-keyword { color: rgb(22, 148, 182) !important; }
+.cm-s-inner .cm-operator { color: rgb(47, 134, 210) !important; }
+.cm-s-inner .cm-variable, .cm-s-inner .cm-builtin, .cm-s-inner .cm-header, .cm-s-inner .cm-tag, .cm-s-inner .cm-property, .cm-s-inner .cm-quote { color: rgb(185, 33, 142) !important; }
+.cm-s-inner .cm-variable-2 { color: rgb(122, 173, 173) !important; }
+.cm-s-inner .cm-variable-3, .cm-s-inner .cm-type, .cm-s-inner .cm-atom { color: rgb(55, 142, 216) !important; }
+.cm-s-inner .cm-number { color: rgb(26, 84, 148) !important; }
+.cm-s-inner .cm-def, .cm-s-inner .cm-qualifier { color: rgb(7, 68, 172) !important; }
+.cm-s-inner .cm-string { color: rgb(111, 66, 194) !important; }
+.cm-s-inner .cm-string-2 { color: rgb(39, 99, 143) !important; }
+.cm-s-inner .cm-comment { color: rgb(154, 154, 154) !important; }
+.cm-s-inner .cm-meta { color: rgb(11, 147, 190) !important; }
+.cm-s-inner .cm-attribute { color: rgb(143, 106, 168) !important; }
+.cm-s-inner .cm-error { color: rgb(255, 255, 255) !important; background-color: rgba(185, 33, 142, 0.25) !important; }
+.cm-s-inner .CodeMirror-matchingbracket { text-decoration: underline; color: white !important; }
+.CodeMirror div.CodeMirror-cursor { border-left: 1px solid var(--primary-color); z-index: 3; }
+.cm-s-inner div.CodeMirror-selected { background: rgba(167, 178, 189, 0.2) !important; }
+.cm-s-inner.CodeMirror-focused div.CodeMirror-selected { background: rgba(167, 178, 189, 0.2) !important; }
+.cm-s-inner .CodeMirror-selected, .cm-s-inner .CodeMirror-selectedtext { background-color: rgba(167, 178, 189, 0) !important; }
+.cm-s-inner .CodeMirror-line::selection, .cm-s-inner .CodeMirror-line > span::selection, .cm-s-inner .CodeMirror-line > span > span::selection { background-color: rgba(167, 178, 189, 0.2); }
+.md-rawblock .md-rawblock-tooltip { transform: translateY(-120%); }
+.megamenu-menu-header { border: none; color: var(--text-color); }
+.megamenu-menu-header #megamenu-back-btn, .megamenu-menu-header .megamenu-menu-header-title-back, .megamenu-menu-header .megamenu-menu-header-title-menu { color: var(--text-color); }
+.megamenu-menu { background-color: var(--bg-color); color: var(--text-color); box-shadow: none !important; }
+header, #megamenu-content { background-color: var(--bg-color); background-image: none !important; }
+.md-search-hit { background-color: var(--search-hit-bg-color); }
+#recent-file-panel tbody tr:nth-child(2n-1) { background-color: var(--recent-file-panel-n-bg-color); color: var(--recent-file-panel-n-color); }
+
+
+</style>
+</head>
+<body class='typora-export os-windows' >
+<div  id='write'  class = 'is-node'><h1><a name="多电机控制" class="md-header-anchor"></a><span>多电机控制</span></h1><blockquote><p><em><span>工程训练IIB  风力摆A组-多电机控制</span></em></p><p><em><span>天津理工大学</span></em></p><p><em><span>作者：TheWindSing</span></em></p><p><em><span>邮箱：</span><a href='mailto:thewindsing.zwx@qq.com' target='_blank' class='url'>thewindsing.zwx@qq.com</a></em></p><p><em><span>版本：1.0</span></em></p><p><em><span>时间：2024-1-4</span></em></p></blockquote><h2><a name="器件说明" class="md-header-anchor"></a><span>器件说明</span></h2><h3><a name="主控单片机" class="md-header-anchor"></a><span>主控单片机</span></h3><h4><a name="型号" class="md-header-anchor"></a><span>型号：</span></h4><p><span>STC89C52RC</span></p><h4><a name="参考" class="md-header-anchor"></a><span>参考:</span></h4><p><a href=' [宏晶 STC89C52RC 微控制器实践小书 - UinIO.com 电子技术博客](http://www.uinio.com/Embedded/STC89C52/) '><span>宏晶 STC89C52RC 微控制器实践小书</span></a></p><h4><a name="51最小系统图" class="md-header-anchor"></a><span>51最小系统图：</span></h4><p><img src="1704374119476.png" referrerpolicy="no-referrer" alt="通用最小系统"></p><p>&nbsp;</p><h4><a name="接口图" class="md-header-anchor"></a><span>接口图:</span></h4><p><span> </span><img src="1704374055902.png" referrerpolicy="no-referrer" alt="STC89C52RC"></p><p>&nbsp;</p><h3><a name="电机驱动芯片" class="md-header-anchor"></a><span>电机驱动芯片</span></h3><h4><a name="型号-n22" class="md-header-anchor"></a><span>型号：</span></h4><p><span>TC1508A</span></p><h4><a name="实物图" class="md-header-anchor"></a><span>实物图：</span></h4><p><img src="1704377404258.png" referrerpolicy="no-referrer" alt="TC1508A"></p><p>&nbsp;</p><h3><a name="其他" class="md-header-anchor"></a><span>其他</span></h3><ul><li><span>杜邦线若干</span></li><li><span>几个不确定阻值的电阻</span></li><li><span>1个按钮开关</span></li></ul><hr /><h2><a name="功能实现" class="md-header-anchor"></a><span>功能实现</span></h2><h3><a name="单电机单向控制" class="md-header-anchor"></a><span>单电机单向控制</span></h3><h4><a name="在keil中新建stc工程" class="md-header-anchor"></a><span>在Keil中新建STC工程：</span></h4><blockquote><p><span>一般直接安转完Keil软件中是没有STC的数据库，所以需要我们手动添加。</span></p><p><span>该部分转载</span><a href='https://blog.csdn.net/hpf247/article/details/68936084'><span>CSDN</span></a></p></blockquote><p><span>打开STC-ISP软件,然后点击Keil仿真设置，点击添加型号和头文件到Keil中 添加STC仿真器驱动到Keil中。</span></p><p><span>如下图：</span>
+<img src="https://img-blog.csdn.net/20170331213300400?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvaHBmMjQ3/font/5a6L5L2T/fontsize/400/fiKeil%E4%B8%ADll/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" referrerpolicy="no-referrer" alt="img"></p><p>&nbsp;</p><p><span>之后弹出这个方框，选择好路径。</span></p><p><img src="20170331213344475.png" referrerpolicy="no-referrer" alt="img"></p><p><strong><span>选择你Keil软件安装的路径！</span></strong></p><p><img src="20170331213443917.png" referrerpolicy="no-referrer" alt="img"></p><p><span>打开Keil软件，选择新建工程，它就会弹出下面这个界面，这时候就可以选择STC MCU Database进行选择STC系列的单片机了。</span>
+<img src="20170331213557698.png" referrerpolicy="no-referrer" alt="img"></p><p><span>选择STC89C52单片机：</span>
+<img src="20170331213618057.png" referrerpolicy="no-referrer" alt="img"></p><p>&nbsp;</p><h4><a name="代码" class="md-header-anchor"></a><span>代码：</span></h4><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c" style="break-inside: unset;"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 16.7998px; left: 28.2667px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><span><span>​</span>x</span></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-meta">#include &lt;reg52.h&gt;</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-meta">#define uchar unsigned char</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-meta">#define uint unsigned int</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">sbit</span> <span class="cm-variable">LED</span> <span class="cm-operator">=</span> <span class="cm-variable">P2^0</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">DelayMS</span>(<span class="cm-variable">uint</span> <span class="cm-variable">x</span>)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">uchar</span> <span class="cm-variable">i</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">while</span>(<span class="cm-variable">x</span><span class="cm-operator">--</span>)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">for</span>(<span class="cm-variable">i</span><span class="cm-operator">=</span><span class="cm-number">120</span>;<span class="cm-variable">i</span><span class="cm-operator">&gt;</span><span class="cm-number">0</span>;<span class="cm-variable">i</span><span class="cm-operator">--</span>);</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">main</span>()</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">while</span>(<span class="cm-number">1</span>)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">LED</span> <span class="cm-operator">=</span> <span class="cm-variable">~LED</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">DelayMS</span>(<span class="cm-number">150</span>);</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 476px;"></div><div class="CodeMirror-gutters" style="display: none; height: 476px;"></div></div></div></pre><h4><a name="电路布局" class="md-header-anchor"></a><span>电路布局：</span></h4><p><img src="1704597815173.png" referrerpolicy="no-referrer" alt="单电机电路布局"></p><blockquote><p><span>这里由于器件限制省略了复位部分，器件充足的情况下最好加上。</span></p></blockquote><h3><a name="多电机多向控制" class="md-header-anchor"></a><span>多电机多向控制</span></h3><blockquote><p><span>实际上可以在Keil这个EDA软件里面直接修改然后写出多电机控制的程序</span></p><p><span>但是，这里建议采用VScode、Sublime Text、Notepad++等编辑器做进一开发，有利于代码编写和文件管理。</span></p></blockquote><h4><a name="vscode教程" class="md-header-anchor"></a><span>VScode教程：</span></h4><p><span>下载Embedded IDE插件，还可以添加Copilot和C语言编程等插件</span></p><p><img src="1704470369429.png" referrerpolicy="no-referrer" alt="1704470369429"></p><p><span>设置工具链：</span></p><p><img src="1704470588440.png" referrerpolicy="no-referrer" alt="1704470588440"></p><p><span>依次新建好项目：</span></p><p><img src="1704470932318.png" referrerpolicy="no-referrer" alt="1704470932318"></p><p><img src="1704470937382.png" referrerpolicy="no-referrer" alt="1704470937382"></p><p><img src="1704470940799.png" referrerpolicy="no-referrer" alt="1704470940799"></p><p><span>打开项目则需要切换到项目工作区：</span></p><p><img src="1704471136808.png" referrerpolicy="no-referrer" alt="1704471136808"></p><p>&nbsp;</p><h4><a name="控制一个电机正反方向旋转代码" class="md-header-anchor"></a><span>控制一个电机正反方向旋转代码：</span></h4><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c" style="break-inside: unset;"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 16.8008px; left: 28.2667px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-meta">#include&lt;reg52.h&gt;</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-meta">#define uint unsigned int</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-meta">#define uchar unsigned char</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">uchar</span> <span class="cm-variable">time</span>,<span class="cm-variable">count</span><span class="cm-operator">=</span><span class="cm-number">100</span>,<span class="cm-variable">flag</span><span class="cm-operator">=</span><span class="cm-number">1</span>;<span class="cm-comment">//低电平的占空</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">sbit</span> <span class="cm-variable">PWM1</span><span class="cm-operator">=</span><span class="cm-variable">P2^0</span>;<span class="cm-tab" role="presentation" cm-text="	"> </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-comment">//PWM 通道 1，反转脉冲</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">sbit</span> <span class="cm-variable">PWM2</span><span class="cm-operator">=</span><span class="cm-variable">P2^1</span>;<span class="cm-tab" role="presentation" cm-text="	"> </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-comment">//PWM 通道 2，正转脉冲</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">sbit</span> <span class="cm-variable">key_turn</span><span class="cm-operator">=</span><span class="cm-variable">P3^7</span>; <span class="cm-comment">//电机换向</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">delayxms</span>(<span class="cm-variable">uint</span> <span class="cm-variable">z</span>);</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">Motor_turn</span>(<span class="cm-variable-3">void</span>);</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">timer0_init</span>(<span class="cm-variable-3">void</span>);</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">main</span>(<span class="cm-variable-3">void</span>)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">timer0_init</span>();</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">while</span>(<span class="cm-number">1</span>)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span> <span class="cm-variable">Motor_turn</span>();</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">delayxms</span>(<span class="cm-variable">uint</span> <span class="cm-variable">z</span>)<span class="cm-comment">//延时xms程序</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-variable">uint</span> <span class="cm-variable">x</span>,<span class="cm-variable">y</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-keyword">for</span>(<span class="cm-variable">y</span><span class="cm-operator">=</span><span class="cm-variable">z</span>;<span class="cm-variable">x</span><span class="cm-operator">&gt;</span><span class="cm-number">0</span>;<span class="cm-variable">x</span><span class="cm-operator">--</span>)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-keyword">for</span>(<span class="cm-variable">y</span><span class="cm-operator">=</span><span class="cm-number">110</span>;<span class="cm-variable">y</span><span class="cm-operator">&gt;</span><span class="cm-number">0</span>;<span class="cm-variable">y</span><span class="cm-operator">--</span>);</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">Motor_turn</span>(<span class="cm-variable-3">void</span>)<span class="cm-tab" role="presentation" cm-text="	">   </span><span class="cm-comment">//电机换向控制</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">if</span>(<span class="cm-variable">key_turn</span><span class="cm-operator">==</span><span class="cm-number">0</span>)</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span> {</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span> &nbsp; &nbsp;<span class="cm-variable">delayxms</span>(<span class="cm-number">2</span>);<span class="cm-comment">//此处可有可无，但是时间不能太长，否者会的中断产生冲突</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span> &nbsp; &nbsp;<span class="cm-keyword">if</span>(<span class="cm-variable">key_turn</span><span class="cm-operator">==</span><span class="cm-number">0</span>)<span class="cm-variable">flag</span><span class="cm-operator">=</span><span class="cm-variable">~flag</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span> &nbsp; &nbsp;<span class="cm-keyword">while</span>(<span class="cm-operator">!</span><span class="cm-variable">key_turn</span>);</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span> }</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">timer0_init</span>(<span class="cm-variable-3">void</span>)<span class="cm-tab" role="presentation" cm-text="	">  </span><span class="cm-comment">//定时器0初始化</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">TMOD</span><span class="cm-operator">=</span><span class="cm-number">0x01</span>; <span class="cm-comment">//定时器0工作于方式1</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">TH0</span><span class="cm-operator">=</span>(<span class="cm-number">65536</span><span class="cm-operator">-</span><span class="cm-number">10</span>)<span class="cm-operator">/</span><span class="cm-number">256</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">TL0</span><span class="cm-operator">=</span>(<span class="cm-number">65536</span><span class="cm-operator">-</span><span class="cm-number">10</span>)<span class="cm-operator">%</span><span class="cm-number">256</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">TR0</span><span class="cm-operator">=</span><span class="cm-number">1</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">ET0</span><span class="cm-operator">=</span><span class="cm-number">1</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">EA</span><span class="cm-operator">=</span><span class="cm-number">1</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">timer0_int</span>(<span class="cm-variable-3">void</span>) <span class="cm-variable">interrupt</span> <span class="cm-number">1</span><span class="cm-tab" role="presentation" cm-text="	">   </span><span class="cm-comment">//定时器0中断函数</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">TR0</span><span class="cm-operator">=</span><span class="cm-number">0</span>;<span class="cm-comment">//设置定时器初值期间，关闭定时器</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">TH0</span><span class="cm-operator">=</span>(<span class="cm-number">65536</span><span class="cm-operator">-</span><span class="cm-number">10</span>)<span class="cm-operator">/</span><span class="cm-number">256</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">TL0</span><span class="cm-operator">=</span>(<span class="cm-number">65536</span><span class="cm-operator">-</span><span class="cm-number">10</span>)<span class="cm-operator">%</span><span class="cm-number">256</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">TR0</span><span class="cm-operator">=</span><span class="cm-number">1</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">if</span>(<span class="cm-variable">flag</span><span class="cm-operator">==</span><span class="cm-number">1</span>)<span class="cm-comment">//电机正转</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">PWM1</span><span class="cm-operator">=</span><span class="cm-number">0</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">time</span><span class="cm-operator">++</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">if</span>(<span class="cm-variable">time</span><span class="cm-operator">&lt;</span><span class="cm-variable">count</span>)<span class="cm-variable">PWM2</span><span class="cm-operator">=</span><span class="cm-number">1</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">else</span> &nbsp;<span class="cm-variable">PWM2</span><span class="cm-operator">=</span><span class="cm-number">0</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" class="cm-tab-wrap-hack" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">if</span>(<span class="cm-variable">time</span><span class="cm-operator">&gt;=</span><span class="cm-number">100</span>)<span class="cm-variable">time</span><span class="cm-operator">=</span><span class="cm-number">0</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">else</span> <span class="cm-comment">//电机反转</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">PWM2</span><span class="cm-operator">=</span><span class="cm-number">0</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">time</span><span class="cm-operator">++</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">if</span>(<span class="cm-variable">time</span><span class="cm-operator">&lt;</span><span class="cm-variable">count</span>) <span class="cm-variable">PWM1</span><span class="cm-operator">=</span><span class="cm-number">1</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">else</span> <span class="cm-variable">PWM1</span><span class="cm-operator">=</span><span class="cm-number">0</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" class="cm-tab-wrap-hack" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">if</span>(<span class="cm-variable">time</span><span class="cm-operator">&gt;=</span><span class="cm-number">100</span>)<span class="cm-variable">time</span><span class="cm-operator">=</span><span class="cm-number">0</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span>}</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 1771px;"></div><div class="CodeMirror-gutters" style="display: none; height: 1771px;"></div></div></div></pre><h4><a name="电路布局-n76" class="md-header-anchor"></a><span>电路布局：</span></h4><p><img src="1704598369421.png" referrerpolicy="no-referrer" alt="多电机多向控制"></p><blockquote><p><span>同样，受器件所限，只有一个按钮开关</span></p></blockquote></div>
+</body>
+</html>

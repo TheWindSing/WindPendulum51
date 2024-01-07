@@ -1,0 +1,45 @@
+C51 COMPILER V9.59.0.0   MOTORTAST0                                                        01/05/2024 22:49:52 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MOTORTAST0
+OBJECT MODULE PLACED IN .\Objects\Motortast0.obj
+COMPILER INVOKED BY: D:\MDK5.14\C51\BIN\C51.EXE Motortast0.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listing
+                    -s\Motortast0.lst) TABS(2) OBJECT(.\Objects\Motortast0.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          #define uchar unsigned char
+   3          #define uint unsigned int
+   4          sbit LED = P2^0;
+   5          
+   6          void DelayMS(uint x)
+   7          {
+   8   1        uchar i;
+   9   1        while(x--)
+  10   1        {
+  11   2          for(i=120;i>0;i--);
+  12   2        }
+  13   1      }
+  14          void main()
+  15          {
+  16   1        while(1)
+  17   1        {
+  18   2          LED = ~LED;
+  19   2          DelayMS(150);
+  20   2        }
+  21   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     37    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,4 @@
+".\Objects\STARTUP.obj",
+".\Objects\Motortast0.obj" 
+TO ".\Objects\task1" 
+PRINT(".\Listings\task1.m51") RAMSIZE(256) 
