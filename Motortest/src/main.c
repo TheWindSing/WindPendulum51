@@ -6,6 +6,8 @@ uchar time,count=100,flag=1;//低电平的占空
 
 sbit PWM1=P2^0;		//PWM 通道 1，反转脉冲
 sbit PWM2=P2^1;		//PWM 通道 2，正转脉冲
+sbit PWM3=P2^2;		//PWM 通道 3，反转脉冲
+sbit PWM4=P2^3;		//PWM 通道 4，正转脉冲
 sbit key_turn=P3^7; //电机换向
 
 
@@ -33,7 +35,7 @@ void Motor_turn(void)	//电机换向控制
 {
 	if(key_turn==0)
 	 {
-	    delayxms(2);//此处可有可无，但是时间不能太长，否者会的中断产生冲突
+	    // delayxms(2);//此处可有可无，但是时间不能太长，否者会的中断产生冲突
 	    if(key_turn==0)flag=~flag;
 	    while(!key_turn);
 	 }
@@ -59,6 +61,7 @@ void timer0_int(void) interrupt 1	//定时器0中断函数
 	if(flag==1)//电机正转
 	{
 		PWM1=0;
+		PWM3=0;
 		time++;
 		if(time<count)PWM2=1;
 		else  PWM2=0;
@@ -69,6 +72,7 @@ void timer0_int(void) interrupt 1	//定时器0中断函数
 	else //电机反转
 	{
 		PWM2=0;
+		PWM4=0;
 		time++;
 		if(time<count) PWM1=1;
 		else PWM1=0;
